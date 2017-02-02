@@ -13,7 +13,7 @@ class KaloriesTest extends \PHPUnit_Framework_TestCase
 
     public function setup()
     {
-        $this->db = new \PDO("sqlite:db/database.db");
+        $this->db = new \PDO("sqlite:kalories/db/database.db");
         $this->kalories = new Kalories($this->db);
         $this->cleanDatabase();
     }
