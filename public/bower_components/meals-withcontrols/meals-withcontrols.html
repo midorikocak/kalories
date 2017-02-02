@@ -23,9 +23,9 @@
 
         <div class="column" id="main-content">
             <midori-modal>
-                <meal-form action="/app.php/meals/add"></meal-form>
+                <meal-form action="/kalories/app.php/meals/add"></meal-form>
             </midori-modal>
-            <meals-table href="/app.php/meals"></meals-table>
+            <meals-table href="/kalories/app.php/meals"></meals-table>
         </div>
     </div>
 </template>
@@ -78,7 +78,7 @@
             this.startDateInput = this.querySelector('#start-date');
             this.endDateInput = this.querySelector('#end-date');
 
-            this.url = "/app.php/meals";
+            this.url = "/kalories/app.php/meals";
             var mealsElement = this;
 
             var startDateInput = this.startDateInput;
@@ -154,7 +154,7 @@
                         }
                     }
                 };
-                request.open('POST', '/app.php/meals');
+                request.open('POST', '/kalories/app.php/meals');
                 request.setRequestHeader("Content-type", "application/json");
                 request.send(JSON.stringify({day: date}));
             }
@@ -177,7 +177,7 @@
                     }
                 };
 
-                request.open('DELETE', '/app.php/meals/delete')
+                request.open('DELETE', '/kalories/app.php/meals/delete')
 
                 request.send(id)
             } else {

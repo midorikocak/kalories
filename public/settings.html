@@ -18,12 +18,12 @@
 <main>
     <div class="row">
         <div class="column" id="setting">
-            <meal-settingform action="/app.php/users/limit"></meal-settingform>
+            <meal-settingform action="/kalories/app.php/users/limit"></meal-settingform>
         </div>
     </div>
     <div class="row">
         <div class="column" id="main-content">
-            <meal-userform action="/app.php/users/edit"></meal-userform>
+            <meal-userform action="/kalories/app.php/users/edit"></meal-userform>
         </div>
         <midori-message></midori-message>
     </div>
@@ -49,7 +49,7 @@
                 }
             };
 
-            request.open('GET', '/app.php/user')
+            request.open('GET', '/kalories/app.php/user')
             request.send()
         };
 
@@ -67,7 +67,7 @@
                 }
             };
 
-            request.open('GET', '/app.php/user/calorie-limit')
+            request.open('GET', '/kalories/app.php/user/calorie-limit')
             request.send()
         };
 

@@ -43,15 +43,15 @@ var dailyMeals = function (date) {
 
 var home = function () {
     mainContentElement.innerHTML = '';
-    if (mealsWithControls.url != '/app.php/meals')
-        mealsWithControls.url = '/app.php/meals';
+    if (mealsWithControls.url != '/kalories/app.php/meals')
+        mealsWithControls.url = '/kalories/app.php/meals';
     mealsWithControls.setDate('');
     mainContentElement.appendChild(mealsWithControls);
 };
 
 var lastWeek = function () {
     mainContentElement.innerHTML = '';
-    mealsWithControls.url = '/app.php/meals/last-week';
+    mealsWithControls.url = '/kalories/app.php/meals/last-week';
     mealsWithControls.removeAttribute('date');
     mealsWithControls.setDate('');
     mealsWithControls.table.reload();
@@ -108,7 +108,7 @@ var logout = function () {
             }
         }
     };
-    request.open('GET', "/app.php/users/logout");
+    request.open('GET', "/kalories/app.php/users/logout");
     request.send();
 };
 
