@@ -1,4 +1,6 @@
 # Kalories
+### ATTENTION! THIS REPOSITORY IS COPYRIGHTED. COPYING IS NOT ALLOWED!
+
 > Web App implementation using PHP best practices and web components.
 [![Build Status][travis-image]][travis-url]
 
