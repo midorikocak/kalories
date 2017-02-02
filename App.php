@@ -10,6 +10,8 @@ new class
         $this->request = new \MidoriKocak\Request();
         $elements = $this->request->urlElements;
         $kalories = new \MidoriKocak\Kalories(new \PDO("sqlite:kalories/db/database.db"));
+        var_dump($kalories);
+        die;
         $parameters = $this->request->parameters;
         if (empty($elements)) {
             echo json_encode(['message' => 'welcome to kalories app api.']);
