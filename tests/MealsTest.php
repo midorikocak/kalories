@@ -33,7 +33,7 @@ class MealsTest extends \PHPUnit_Framework_TestCase
 
     public function setup()
     {
-        $this->db = new \PDO("sqlite:kalories/db/database.db");
+        $this->db = new \PDO("sqlite:/var/www/vhosts/mtkocak.net/httpdocs/kalories/db/database.db");
         $this->meal = new Meal($this->mealData);
         $this->meals = new Meals($this->db);
 
