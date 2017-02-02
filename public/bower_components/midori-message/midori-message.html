@@ -1,0 +1,131 @@
+<!-- Defines element markup -->
+<template>
+    <style>
+        /* The snackbar - position it at the bottom and in the middle of the screen */
+        #midori-message {
+            visibility: hidden; /* Hidden by default. Visible on click */
+            min-width: 250px; /* Set a default minimum width */
+            margin-left: -125px; /* Divide value of min-width by 2 */
+            background-color: #333; /* Black background color */
+            color: #fff; /* White text color */
+            text-align: center; /* Centered text */
+            border-radius: 2px; /* Rounded borders */
+            padding: 16px; /* Padding */
+            position: fixed; /* Sit on top of the screen */
+            z-index: 1; /* Add a z-index if needed */
+            left: 50%; /* Center the snackbar */
+            bottom: 30px; /* 30px from the bottom */
+        }
+
+        /* Show the snackbar when clicking on a button (class added with JavaScript) */
+        #midori-message.show {
+            visibility: visible; /* Show the snackbar */
+
+            /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+            However, delay the fade out process for 2.5 seconds */
+            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        /* Animations to fade the snackbar in and out */
+        @-webkit-keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @-webkit-keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+    <div id="midori-message"></div>
+</template>
+
+<script>
+    (function (window, document, undefined) {
+
+        // Refers to the "importer", which is index.html
+        var thatDoc = document;
+
+        // Refers to the "importee", which is src/hello-world.html
+        var thisDoc = (thatDoc._currentScript || thatDoc.currentScript).ownerDocument;
+
+        // Gets content from <template>
+        var template = thisDoc.querySelector('template').content;
+
+        // Creates an object based in the HTML Element prototype
+        var MessageElementProto = Object.create(HTMLElement.prototype);
+
+        // Creates the "who" attribute and sets a default value
+        MessageElementProto.message = 'Hello';
+
+        // Fires when an instance was inserted into the document
+        MessageElementProto.attachedCallback = function () {
+            console.log('attached');
+        };
+        // Fires when an instance was removed from the document
+        MessageElementProto.detachedCallback = function () {
+            console.log('detached');
+        };
+
+        // Fires when an instance of the element is created
+        MessageElementProto.createdCallback = function () {
+            console.log('created');
+            // gives inner html elements
+            var clone = thatDoc.importNode(template, true);
+            this.appendChild(clone);
+            this.messageDisplay = this.querySelector('#midori-message');
+
+            // Checks if the "who" attribute has been overwritten
+            if (this.hasAttribute('message')) {
+                var message = this.getAttribute('message');
+                this.setMessage(message);
+            }
+            else {
+                this.setMessage(this.message);
+            }
+        };
+
+        // Fires when an attribute was added, removed, or updated
+        MessageElementProto.attributeChangedCallback = function (attr, oldVal, newVal) {
+            console.log('attributeChanged');
+            if (attr === 'message') {
+                this.setMessage(newVal);
+            }
+        };
+
+        MessageElementProto.show = function(){
+
+
+            // Add the "show" class to DIV
+            this.messageDisplay.className = "show";
+            var messageDisplay = this.messageDisplay;
+
+            // After 3 seconds, remove the show class from DIV
+            setTimeout(function(){ messageDisplay.className = messageDisplay.className.replace("show", ""); }, 3000);
+        }
+
+        // Sets new value to "who" attribute
+        MessageElementProto.setMessage = function (val) {
+            this.message = val;
+
+            // Sets "message" value into <div>
+            this.messageDisplay.textContent = this.message;
+        };
+
+        // Registers <midori-message in the main document
+        window.MessageElement = thatDoc.registerElement('midori-message', {
+            prototype: MessageElementProto
+        });
+    })(window, document);
+</script>

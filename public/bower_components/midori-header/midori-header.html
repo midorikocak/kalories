@@ -1,0 +1,110 @@
+<!-- Defines element markup -->
+<template>
+    <style>
+
+        .midori-header * {
+            padding: 0;
+            margin: 0;
+            color: white;
+            font-size: 1.6rem;
+            line-height: 3rem;
+            float:right;
+        }
+
+        .midori-header{
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+            color: white;
+            position: fixed; /* Set the navbar to fixed position */
+            top: 0; /* Position the navbar at the top of the page */
+            width: 100%; /* Full width */
+        }
+
+        .midori-header > h1, .midori-header > div {
+            padding: 14px 16px;
+            display: inline-block;
+            float:left;
+            text-decoration: none;
+            margin:0;
+        }
+
+    </style>
+    <header class="midori-header">
+        <h1>Title</h1>
+    </header>
+</template>
+
+<script>
+    (function (window, document, undefined) {
+
+        // Refers to the "importer", which is index.html
+        var thatDoc = document;
+
+        // Refers to the "importee", which is src/hello-world.html
+        var thisDoc = (thatDoc._currentScript || thatDoc.currentScript).ownerDocument;
+
+        // Gets content from <template>
+        var template = thisDoc.querySelector('template').content;
+
+        // Creates an object based in the HTML Element prototype
+        var HeaderElementProto = Object.create(HTMLElement.prototype);
+
+        // Creates the "who" attribute and sets a default value
+        HeaderElementProto.titleText = 'Title';
+
+        // Fires when an instance was inserted into the document
+        HeaderElementProto.attachedCallback = function () {
+            console.log('attached');
+        };
+        // Fires when an instance was removed from the document
+        HeaderElementProto.detachedCallback = function () {
+            console.log('detached');
+        };
+
+        // Fires when an instance of the element is created
+        HeaderElementProto.createdCallback = function () {
+
+            // gives inner html elements
+            var existingContent = this.innerHTML;
+            this.textContent = "";
+
+            var clone = thatDoc.importNode(template, true);
+            this.appendChild(clone);
+
+            this.titleElement = this.querySelector('h1');
+            this.headerElement = this.querySelector('header');
+
+            if (this.hasAttribute('title')) {
+                var title = this.getAttribute('title');
+                this.setTitle(title);
+            }
+            else {
+                this.setTitle(this.titleText);
+            }
+
+            this.headerElement.innerHTML += existingContent;
+        };
+
+        // Fires when an attribute was added, removed, or updated
+        HeaderElementProto.attributeChangedCallback = function (attr, oldVal, newVal) {
+            console.log('attributeChanged');
+            if (attr === 'title') {
+                this.setTitle(newVal);
+            }
+        };
+
+        // Sets new value to "who" attribute
+        HeaderElementProto.setTitle = function (val) {
+            this.titleText = val;
+
+            this.titleElement.textContent = this.titleText;
+        };
+
+        // Registers <midori-layout in the main document
+        window.HeaderElement = thatDoc.registerElement('midori-header', {
+            prototype: HeaderElementProto
+        });
+    })(window, document);
+</script>

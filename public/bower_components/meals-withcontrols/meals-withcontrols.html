@@ -1,0 +1,255 @@
+<template>
+    <style>
+        #start {
+            display: none;
+        }
+
+        #end {
+            display: none;
+        }
+    </style>
+    <meals-dayinfo></meals-dayinfo>
+    <div class="row">
+        <div class="column">
+            <ul class="midori-navigation horizontal section-navigation">
+                <li><a href="#" id="show-form">Add</a></li>
+                <li><a href="#" id="redraw-table">Reload</a></li>
+                <li id="start">Start Date: <input type="date" id="start-date" name="start-date"></li>
+                <li id="end">End Date: <input type="date" id="end-date" name="end-date"></li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="column" id="main-content">
+            <midori-modal>
+                <meal-form action="/app.php/meals/add"></meal-form>
+            </midori-modal>
+            <meals-table href="/app.php/meals"></meals-table>
+        </div>
+    </div>
+</template>
+
+<script>
+    (function (window, document, undefined) {
+
+        // Refers to the "importer", which is index.html
+        var thatDoc = document;
+
+        // Refers to the "importee", which is src/hello-world.html
+        var thisDoc = (thatDoc._currentScript || thatDoc.currentScript).ownerDocument;
+
+        // Gets content from <template>
+        var template = thisDoc.querySelector('template').content;
+
+        // Creates an object based in the HTML Element prototype
+        var MealsElementProto = Object.create(HTMLElement.prototype);
+
+
+        MealsElementProto.startDate = '';
+        MealsElementProto.endDate = '';
+        MealsElementProto.date = '';
+
+        MealsElementProto.urlParameters = [];
+
+        // Fires when an instance was inserted into the document
+        MealsElementProto.attachedCallback = function () {
+            //console.log('attached');
+        };
+
+        // Fires when an instance was removed from the document
+        MealsElementProto.detachedCallback = function () {
+            delete(this);
+        };
+
+        // Fires when an instance of the element is created
+        MealsElementProto.createdCallback = function () {
+            // gives inner html elements
+            console.log('main element created');
+            var clone = thatDoc.importNode(template, true);
+            this.appendChild(clone);
+
+            this.table = this.querySelector('meals-table');
+            this.form = this.querySelector('meal-form');
+            this.modal = this.querySelector('midori-modal');
+            this.dayInfo = this.querySelector('meals-dayinfo');
+            this.redraw = this.querySelector('#redraw-table');
+            this.showForm = this.querySelector('#show-form');
+            this.startDateInput = this.querySelector('#start-date');
+            this.endDateInput = this.querySelector('#end-date');
+
+            this.url = "/app.php/meals";
+            var mealsElement = this;
+
+            var startDateInput = this.startDateInput;
+            this.startDateInput.addEventListener('input', function () {
+                mealsElement.setStartDate(startDateInput.value);
+            });
+
+            var endDateInput = this.endDateInput;
+            this.endDateInput.addEventListener('input', function () {
+                mealsElement.setEndDate(endDateInput.value);
+            });
+
+            var table = this.table;
+
+            this.redraw.addEventListener('click', function () {
+                console.log('redreaw');
+                mealsElement.reloadDayInfo();
+                mealsElement.table.reload();
+            });
+
+            var form = this.form;
+            var modal = this.modal;
+
+            this.showForm.addEventListener('click', function () {
+                form.reset();
+                form.setData({date: mealsElement.date});
+                modal.toggle();
+            });
+
+            this.table.setEdit(function (item) {
+                form.setData(table.getItemById(item));
+                modal.toggle();
+            });
+
+            this.table.setDelete(MealsElementProto.deleteItem);
+
+            var dayInfo = this.dayInfo;
+
+            // Checks if the "who" attribute has been overwritten
+            if (this.hasAttribute('date')) {
+                var date = this.getAttribute('date');
+                this.setDate(date);
+            }
+            else {
+                this.setDate(this.date);
+            }
+
+            var mealsElement = this;
+
+            var observer = function () {
+                console.log('observed');
+                mealsElement.table.reload();
+                mealsElement.reloadDayInfo();
+                mealsElement.modal.toggle();
+            };
+
+            //this.form.removeObserver(observer);
+            this.form.addObserver(observer);
+        };
+
+        MealsElementProto.reloadDayInfo = function () {
+            var date = this.date;
+            if (date != '') {
+                var dayInfo = this.dayInfo;
+                var request = new XMLHttpRequest();
+                request.onreadystatechange = function () {
+                    if (request.readyState === 4) {
+                        if (request.status === 200) {
+                            var info = JSON.parse(request.responseText);
+                            dayInfo.setData(info);
+                        } else {
+                            console.log('An error occurred during your request: ' + request.status + ' ' + request.statusText);
+                        }
+                    }
+                };
+                request.open('POST', '/app.php/meals');
+                request.setRequestHeader("Content-type", "application/json");
+                request.send(JSON.stringify({day: date}));
+            }
+        };
+
+        MealsElementProto.deleteItem = function (id) {
+            if (confirm('Are you sure to delete item #' + id)) {
+                var request = new XMLHttpRequest();
+                var table = document.querySelector('meals-table');
+                var mealsElement = document.querySelector('meals-withcontrols')
+                request.onreadystatechange = function () {
+                    if (request.readyState === 4) {
+                        if (request.status === 200) {
+                            mealsElement.reloadDayInfo();
+                            table.reload();
+                            //result.textContent = request.responseText;
+                        } else {
+                            console.log('An error occurred during your request: ' + request.status + ' ' + request.statusText);
+                        }
+                    }
+                };
+
+                request.open('DELETE', '/app.php/meals/delete')
+
+                request.send(id)
+            } else {
+            }
+        };
+
+        MealsElementProto.getQueryStringFromArray = function (parameters) {
+            var i = 0;
+            var queryString = '';
+            for (parameter in parameters) {
+                if (parameters[parameter] != '') {
+                    if (i == 0) {
+                        queryString += '?';
+                    }
+                    else {
+                        queryString += '&';
+                    }
+                    queryString += parameter + '=' + parameters[parameter];
+                    i++;
+                }
+            }
+            return queryString;
+        };
+
+        MealsElementProto.setStartDate = function (date) {
+            this.urlParameters['start-date'] = date;
+            if (date != '')
+                this.table.setUrl(this.url + this.getQueryStringFromArray(this.urlParameters));
+        };
+
+        MealsElementProto.setEndDate = function (date) {
+            this.urlParameters['end-date'] = date;
+            if (date != '')
+                this.table.setUrl(this.url + this.getQueryStringFromArray(this.urlParameters));
+        };
+
+        MealsElementProto.setRange = function () {
+            this.urlParameters['start-date'] = this.date;
+            this.urlParameters['end-date'] = this.date;
+            this.table.setUrl(this.url + this.getQueryStringFromArray(this.urlParameters));
+        }
+
+        // Fires when an attribute was added, removed, or updated
+        MealsElementProto.attributeChangedCallback = function (attr, oldVal, newVal) {
+            if (attr === 'date') {
+                this.setDate(newVal)
+            }
+        };
+
+        // Sets new value to "who" attribute
+        MealsElementProto.setDate = function (val) {
+            if (val != '') {
+                this.date = val;
+                this.setRange();
+                this.reloadDayInfo();
+
+                this.dayInfo.style.display = 'inherit';
+                this.querySelector('#start').style.display = 'none';
+                this.querySelector('#end').style.display = 'none';
+            }
+            else {
+                this.table.setUrl(this.url);
+                this.table.reload();
+                this.dayInfo.style.display = 'none';
+                this.querySelector('#start').style.display = 'inherit';
+                this.querySelector('#end').style.display = 'inherit';
+            }
+        };
+
+        // Registers <midori-layout in the main document
+        window.MealsElement = thatDoc.registerElement('meals-withcontrols', {
+            prototype: MealsElementProto
+        });
+    })(window, document);
+</script>

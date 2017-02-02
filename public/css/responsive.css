@@ -1,0 +1,149 @@
+body {
+    background-color: #f5f8fa;
+}
+
+.midori-header * {
+    padding: 0;
+    margin: 0;
+    color: white;
+    font-size: 1.6rem;
+    line-height: 3rem;
+}
+
+.midori-header {
+    margin: 0;
+    padding: 0 1rem 0 1rem;
+    overflow: hidden;
+    background-color: #333;
+    color: white;
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+    width: 100%; /* Full width */
+    z-index: 999;
+}
+
+.midori-header > h1 {
+    padding: 14px 16px;
+    display: inline-block;
+    float: left;
+    text-decoration: none;
+    margin: 0;
+}
+
+ul.midori-navigation {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Style the links inside the list items */
+ul.midori-navigation li a {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Float the list items side by side */
+ul.midori-navigation li {
+    padding: 14px 16px;
+    float: left;
+    margin: 0;
+}
+
+ul.midori-navigation.vertical {
+    position: relative;
+}
+
+ul.midori-navigation.vertical li {
+    float: none;
+    display: inline;
+    text-align: left;
+}
+
+ul.midori-navigation.vertical li a {
+    display: block;
+    text-align: left;
+}
+
+.main {
+    margin-top: 6rem;
+    margin-bottom: 1rem;
+}
+
+.content {
+    background-color: white;
+    margin: 1rem;
+    padding: 1rem;
+}
+
+.content header {
+    margin-bottom: 1rem;
+}
+
+.sidebar {
+    height: 75vh;
+    background-color: white;
+    margin: 1rem;
+}
+
+.section-navigation {
+    border-bottom: 1px solid #f5f8fa;
+    margin-bottom: 1rem !important;
+}
+
+@media screen and (min-width: 680px) {
+    .midori-header * {
+        float: right;
+    }
+}
+
+/* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens */
+@media screen and (max-width: 680px) {
+
+    .column {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .midori-header > h1 {
+        float: none;
+        width: 100%;
+        text-align: center;
+    }
+
+    .sidebar {
+        height: auto;
+        text-align: center;
+    }
+
+    .main {
+        margin-top: 1rem;
+    }
+
+    .midori-header {
+        position: relative;
+    }
+
+    ul.midori-navigation.horizontal {
+        position: relative;
+    }
+
+    ul.midori-navigation.horizontal li {
+        float: none;
+        display: block;
+        text-align: center;
+    }
+
+    ul.midori-navigation.horizontal li a {
+        display: block;
+        text-align: center;
+    }
+
+    ul.midori-navigation.vertical li a {
+        display: block;
+        text-align: center;
+    }
+}

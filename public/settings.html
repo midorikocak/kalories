@@ -1,0 +1,95 @@
+<style>
+    button {
+        margin: 0.5rem;
+    }
+
+    .title{
+        padding-top:2rem !important;
+    }
+</style>
+
+<header>
+    <div class="row">
+        <div class="column">
+            <h3 class="title">User Settings</h3>
+        </div>
+    </div>
+</header>
+<main>
+    <div class="row">
+        <div class="column" id="setting">
+            <meal-settingform action="/app.php/users/limit"></meal-settingform>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column" id="main-content">
+            <meal-userform action="/app.php/users/edit"></meal-userform>
+        </div>
+        <midori-message></midori-message>
+    </div>
+</main>
+
+
+<script>
+    (function (window, document, undefined) {
+
+        var userForm = document.querySelector('meal-userform');
+
+
+        var getUserName = function () {
+            var request = new XMLHttpRequest();
+
+            request.onreadystatechange = function () {
+                if (request.readyState === 4) {
+                    if (request.status === 200) {
+                        userForm.setData(JSON.parse(request.responseText));
+                    } else {
+                        console.log('An error occurred during your request: ' + request.status + ' ' + request.statusText);
+                    }
+                }
+            };
+
+            request.open('GET', '/app.php/user')
+            request.send()
+        };
+
+        var getCalorieLimit = function () {
+            var request = new XMLHttpRequest();
+
+            request.onreadystatechange = function () {
+                if (request.readyState === 4) {
+                    if (request.status === 200) {
+                        var response = JSON.parse(request.responseText);
+                        settingForm.setData({limit: response.calorie_limit});
+                    } else {
+                        console.log('An error occurred during your request: ' + request.status + ' ' + request.statusText);
+                    }
+                }
+            };
+
+            request.open('GET', '/app.php/user/calorie-limit')
+            request.send()
+        };
+
+
+        getUserName();
+        getCalorieLimit();
+
+        var settingForm = document.querySelector('meal-settingform');
+        var messageElement = document.querySelector('midori-message');
+
+        userForm.addObserver(function (data) {
+            data = JSON.parse(data);
+            messageElement.setMessage(data.message || 'Success!');
+            messageElement.show();
+        });
+
+        settingForm.addObserver(function (data) {
+            data = JSON.parse(data);
+            messageElement.setMessage(data.message || 'Success!');
+            messageElement.show();
+        });
+
+    })(window, document);
+
+</script>

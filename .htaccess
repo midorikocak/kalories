@@ -1,0 +1,14 @@
+<IfModule php5_module>
+php_value session.cookie_httponly true
+</IfModule>
+
+Options +FollowSymLinks
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-l
+
+    RewriteRule ^(.*)$ index.php/$1 [L,QSA]
+</IfModule>

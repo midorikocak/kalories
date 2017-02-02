@@ -1,0 +1,376 @@
+<style>
+    /* ========= Osman
+   Get Fonts */
+    @import url(http://fonts.googleapis.com/css?family=Quicksand);
+
+    /* ================
+       Assign Variables */
+    /* ===========================
+       Setup Mixins/Helper Classes */
+    .clearfix:after, .calendar ol:after {
+        content: ".";
+        display: block;
+        height: 0;
+        clear: both;
+        visibility: hidden;
+    }
+
+    /* ==========
+       Setup Page */
+    *, *:before, *:after {
+        box-sizing: border-box;
+    }
+
+    /* ================
+       Calendar Styling */
+    .calendar {
+        background: white;
+        padding: 3em;
+        border-radius: 10px;
+        font-family: 'Quicksand', sans-serif;
+    }
+
+    .calendar .month {
+        margin-top: 0;
+        font-weight: normal;
+        font-size: 3em;
+        color: #6EB590;
+    }
+
+    .calendar ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .calendar ol li {
+        float: left;
+        width: 14.28571%;
+    }
+
+    .calendar .day-names {
+        border-bottom: 1px solid #eee;
+    }
+
+    .calendar .day-names li {
+        text-transform: uppercase;
+        margin-bottom: .5em;
+    }
+
+    .calendar .days li {
+        border-bottom: 1px solid #eee;
+        min-height: 8em;
+    }
+
+    .calendar .days li .date {
+        margin: .5em 0;
+    }
+
+    .calendar .days li .event {
+        font-size: .75em;
+        padding: 0 .75em;
+        line-height: 2em;
+        color: #6EB590;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .calendar .days li .event.span-2 {
+        width: 200%;
+    }
+
+    .calendar .days li .event.begin {
+        border-radius: 1em 0 0 1em;
+    }
+
+    .calendar .days li .event.end {
+        border-radius: 0 1em 1em 0;
+    }
+
+    .calendar .days li .event.all-day {
+        background: #9987B5;
+    }
+
+    .calendar .days li .event.clear {
+        background: none;
+    }
+
+    .calendar .days li:nth-child(n+29) {
+        border-bottom: none;
+    }
+
+    .calendar .days li.outside .date {
+        color: #ddd;
+    }
+
+    .calendar-control[data-calendar-control="prev"] {
+        float: left;
+    }
+
+    .calendar-control[data-calendar-control="next"] {
+        float: right;
+    }
+
+    .calendar-control {
+        cursor: pointer;
+        display: inline;
+        padding: 4px 12px;
+        margin: 1rem;
+    }
+
+    .month {
+        text-align: center;
+    }
+</style>
+<div class="calendar">
+    <div id="calendar-controls"></div>
+    <h1 class="month">
+    </h1>
+    <ol class="day-names">
+    </ol>
+    <ol class="days">
+    </ol>
+</div>
+
+<script>
+    (function (window, document, undefined) {
+        ;
+        (function () {
+            function Calendar(target, date, data) {
+                var date
+                var calendar
+                var container
+
+                switch (typeof date) {
+                    case 'string':
+                        date = date.split('-')
+                        date = new Date(date[0], parseInt(date[1], 10) - 1, date[2])
+                        break
+                    case 'undefined':
+                        date = new Date()
+                        break
+                    case 'object':
+                        if (date instanceof Array) {
+                            data = date
+                            date = new Date()
+                        } else {
+                            date = date
+                        }
+                        break
+                    default:
+                        throw 'Invalid date type!'
+                }
+
+
+                function getMonthName(monthNumber) {
+                    var month = new Array();
+                    month[0] = "January";
+                    month[1] = "February";
+                    month[2] = "March";
+                    month[3] = "April";
+                    month[4] = "May";
+                    month[5] = "June";
+                    month[6] = "July";
+                    month[7] = "August";
+                    month[8] = "September";
+                    month[9] = "October";
+                    month[10] = "November";
+                    month[11] = "December";
+                    return month[monthNumber];
+                }
+
+                container = document.querySelector(target);
+                buildTable(date.getFullYear(), date.getMonth())
+
+                buildControls(date);
+
+                function buildTable(year, month) {
+
+                    var title = getMonthName(month) + ', ' + year;
+                    var titleElement = document.querySelector('.month');
+                    titleElement.textContent = title;
+
+                    var controlDate = new Date(year, month + 1, 0)
+                    var currDate = new Date(year, month, 1, 23)
+                    var iter = 0
+                    var ready = true
+
+                    var dayNames = document.querySelector('.day-names');
+                    var days = document.querySelector('.days');
+                    var request = new XMLHttpRequest();
+                    var formattedMonth = month + 1;
+                    if (formattedMonth < 10) {
+                        formattedMonth = '0' + formattedMonth;
+                    }
+                    var monthYear = {month: formattedMonth, year: year};
+
+                    request.onreadystatechange = function () {
+                        if (request.readyState === 4) {
+                            if (request.status === 200) {
+                                data = JSON.parse(request.responseText);
+                                days.innerHTML = "";
+                                if (currDate.getUTCDay() !== 0) {
+                                    iter = 0 - currDate.getUTCDay()
+                                }
+
+                                while (ready) {
+                                    currDate = new Date(year, month, ++iter)
+
+                                    days.appendChild(newDayCell(currDate, iter < 1 || +currDate > +controlDate))
+
+                                    if (+controlDate < +currDate && currDate.getDay() === 0) {
+                                        ready = false
+                                    }
+
+                                }
+
+                            } else {
+                                console.log('An error occurred during your request: ' + request.status + ' ' + request.statusText);
+                            }
+                        }
+                    };
+
+                    request.open('POST', "/app.php/meals");
+                    request.setRequestHeader('Content-Type', 'application/json')
+                    request.send(JSON.stringify(monthYear));
+
+                    dayNames.innerHTML =
+                            '<li>Sun</li>' +
+                            '<li>Mon</li>' +
+                            '<li>Tue</li>' +
+                            '<li>Wed</li>' +
+                            '<li>Thu</li>' +
+                            '<li>Fri</li>' +
+                            '<li>Sat</li>'
+
+                }
+
+                function newDayCell(dateObj, isOffset) {
+                    var li = newElement('li');
+                    var div = newElement('div');
+                    div.className = "date";
+
+                    var number = newElement('span')
+                    var isoDate = dateObj.toISOString()
+                    isoDate = isoDate.slice(0, isoDate.indexOf('T'))
+
+                    number.innerHTML = dateObj.getUTCDate()
+                    div.className = 'date'
+                    if (isOffset) {
+                        li.className = "outside";
+                    }
+                    div.setAttribute('data-date', isoDate)
+
+                    div.appendChild(number)
+
+                    li.appendChild(div);
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].date === isoDate) {
+                            var event = newElement('div')
+                            if (data[i].status == "good") {
+                                event.style.color = '#6eb590';
+                            }
+                            else {
+                                event.style.color = '#d9534f';
+                            }
+                            event.className = 'event'
+                            var dayLink = newElement('span');
+
+                            dayLink.className = 'day-link';
+
+                            dayLink.href = '#';
+                            dayLink.textContent = data[i].total;
+                            event.appendChild(dayLink);
+
+                            li.style.cursor = 'pointer';
+
+                            var date = data[i].date;
+                            li.addEventListener('click', function () {
+                                dailyMeals(date);
+                            });
+
+                            li.appendChild(event)
+                        }
+                    }
+                    return li
+                }
+
+                function newElement(tagName) {
+                    return document.createElement(tagName)
+                }
+
+                function buildControls(date) {
+                    var div = document.querySelector('#calendar-controls');
+                    var prevBtn = newElement('div')
+                    var nextBtn = newElement('div')
+
+                    prevBtn.innerHTML = '&lt;'
+                    prevBtn.className = 'calendar-control'
+                    prevBtn.setAttribute('data-calendar-control', 'prev')
+
+                    nextBtn.innerHTML = '&gt;'
+                    nextBtn.className = 'calendar-control'
+                    nextBtn.setAttribute('data-calendar-control', 'next')
+
+                    div.className = 'calendar-controls'
+
+                    prevBtn.addEventListener('click', function(e){
+                        var action = e.target.getAttribute('data-calendar-control')
+                        calendarControlClick(action)
+                    });
+
+                    nextBtn.addEventListener('click', function(e){
+                        var action = e.target.getAttribute('data-calendar-control')
+                        calendarControlClick(action)
+                    });
+
+                    div.appendChild(prevBtn)
+                    div.appendChild(nextBtn)
+
+                    function calendarControlClick(action) {
+                        switch (action) {
+                            case 'prev':
+                                date = new Date(date.getFullYear(), date.getMonth() - 1, 1)
+                                break
+                            case 'next':
+                                date = new Date(date.getFullYear(), date.getMonth() + 1, 1)
+                                break
+                        }
+
+                        document.querySelector('.days').innerHTML = "";
+                        document.querySelector('.day-names').innerHTML = "";
+                        buildTable(date.getFullYear(), date.getMonth())
+                    }
+
+                    return div
+                }
+            }
+
+            this.calendar = Calendar
+
+        }).call(this)
+
+        var data = [{
+            date: '2016-08-15',
+            total: '768 Calories',
+            status: 'good'
+        }, {
+            date: '2016-08-16',
+            total: '768 Calories',
+            status: 'bad'
+        }, {
+            date: '2016-09-10',
+            total: '768 Calories',
+            status: 'bad'
+        }, {
+            date: '2016-09-01',
+            total: '768 Calories',
+            status: 'bad'
+        }]
+
+        calendar('.calendar', data)
+
+    })(window, document);
+
+</script>

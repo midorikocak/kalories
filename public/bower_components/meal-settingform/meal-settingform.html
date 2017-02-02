@@ -1,0 +1,137 @@
+<!-- Defines element markup -->
+<template>
+    <style>
+        .button-primary{
+            float:right;
+            margin: 0.5rem;
+        }
+    </style>
+    <form>
+        <fieldset>
+            <label for="limit">Daily Calorie Limit</label>
+            <input type="number" min='0' max="5000" placeholder="Calories Limit" id="limit" name="limit">
+            <input class="button-primary" type="submit" value="Send">
+            <input class="button-primary" type="reset" value="Reset">
+        </fieldset>
+    </form>
+    <div id="result"></div>
+</template>
+
+<script>
+    (function (window, document, undefined) {
+        // Refers to the "importer", which is index.html
+        var thatDoc = document;
+
+        // Refers to the "importee", which is src/meal-form.html
+        var thisDoc = (thatDoc._currentScript || thatDoc.currentScript).ownerDocument;
+
+        // Gets content from <template>
+        var template = thisDoc.querySelector('template').content;
+
+        // Creates an object based in the HTML Element prototype
+        var SettingFormElementProto = Object.create(HTMLElement.prototype);
+
+
+        // Creates the "action" attribute and sets a default value
+        SettingFormElementProto.action = '';
+
+        SettingFormElementProto.observers = [];
+
+        SettingFormElementProto.addObserver = function (callable) {
+            if (typeof callable === 'function' && this.observers.indexOf(callable) == -1) {
+                this.observers.push(callable);
+            }
+        };
+
+        SettingFormElementProto.fire = function (o, thisObj) {
+            var scope = thisObj || window;
+            this.observers.forEach(function (item) {
+                item.call(scope, o);
+            });
+        };
+
+
+        SettingFormElementProto.removeObserver = function (callable) {
+            this.observers = this.observers.filter(
+                    function (item) {
+                        if (item !== callable) {
+                            return item;
+                        }
+                    }
+            );
+        };
+
+        // Fires when an instance of the element is created
+        SettingFormElementProto.createdCallback = function () {
+
+            var SettingFormElement = this;
+            var clone = thatDoc.importNode(template, true);
+            this.appendChild(clone);
+
+            // Caches <strong> DOM query
+            this.form = this.querySelector('form');
+            this.result = this.querySelector('#result');
+            this.url = "";
+
+            //var data = new FormData(this.form);
+            // Checks if the "who" attribute has been overwritten
+            if (this.hasAttribute('action')) {
+                var url = this.getAttribute('action');
+                this.setAction(url);
+            } else {
+                var url = this.url;
+                this.setAction(this.url);
+            }
+
+            this.form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var limit = document.querySelector('#limit').value;
+                var request = new XMLHttpRequest();
+                var result = document.querySelector('#result');
+
+                request.onreadystatechange = function () {
+                    if (request.readyState === 4) {
+                        if (request.status === 200) {
+                            SettingFormElementProto.fire(request.responseText);
+                            //result.textContent = request.responseText;
+                        } else {
+                            console.log('An error occurred during your request: ' + request.status + ' ' + request.statusText);
+                        }
+                    }
+                };
+
+                request.open('POST', url+'/'+limit)
+
+                //request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                request.send()
+            });
+
+        };
+
+        // Fires when an attribute was added, removed, or updated
+        SettingFormElementProto.attributeChangedCallback = function (attr, oldVal, newVal) {
+            if (attr === '') {
+                this.setAction(newVal);
+            }
+        };
+
+        // Sets new value to "href" attribute
+        SettingFormElementProto.setAction = function (val) {
+            this.url = val;
+        };
+
+        SettingFormElementProto.setData = function (val) {
+            this.data = val;
+            for (key in this.data) {
+                if (typeof  this.form.elements[key] != 'undefined')
+                    this.form.elements[key].value = this.data[key];
+            }
+        };
+
+
+        // Registers <meal-form> in the main document
+        window.SettingFormElement = thatDoc.registerElement('meal-settingform', {
+            prototype: SettingFormElementProto
+        });
+    })(window, document);
+</script>

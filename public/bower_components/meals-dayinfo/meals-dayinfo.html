@@ -1,0 +1,152 @@
+<!-- Defines element markup -->
+<template>
+    <style>
+        button {
+            margin: 0.5rem;
+        }
+
+        .title {
+            font-size: 2rem;
+        }
+
+        .date {
+            padding: 1rem;
+            font-weight: lighter;
+            border-bottom: 0.1rem solid #f4f5f6;
+        }
+
+        .number {
+            font-size: 4rem;
+        }
+
+        .information {
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .bad {
+            color: #d9534f;
+        }
+
+        .good {
+            color: #6eb590;
+        }
+    </style>
+    <div class="information">
+        <div class="row">
+            <h1 class="date" id="date-info"></h1>
+        </div>
+        <div class="row">
+            <div class="column">
+                <span id="total-calories" class="number"></span><br>
+                <span class="title">Total</span>
+            </div>
+            <div class="column">
+                <span id="average-calories" class="number"></span><br>
+                <span class="title">Average</span>
+            </div>
+            <div id="status-column" class="column">
+                <span id="status" class="number"></span><br>
+                <span class="title">Status</span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    (function (window, document, undefined) {
+
+        // Refers to the "importer", which is index.html
+        var thatDoc = document;
+
+        // Refers to the "importee", which is src/hello-world.html
+        var thisDoc = (thatDoc._currentScript || thatDoc.currentScript).ownerDocument;
+
+        // Gets content from <template>
+        var template = thisDoc.querySelector('template').content;
+
+        // Creates an object based in the HTML Element prototype
+        var InfoElementProto = Object.create(HTMLElement.prototype);
+
+        InfoElementProto.data = {date: '', total: '', average: '', status: ''};
+
+        // Fires when an instance was inserted into the document
+        InfoElementProto.attachedCallback = function () {
+            console.log('attached');
+        };
+        // Fires when an instance was removed from the document
+        InfoElementProto.detachedCallback = function () {
+            console.log('detached');
+        };
+
+        // Fires when an instance of the element is created
+        InfoElementProto.createdCallback = function () {
+            console.log('created');
+            // gives inner html elements
+            var clone = thatDoc.importNode(template, true);
+            this.appendChild(clone);
+
+            this.total = this.querySelector('#total-calories');
+            this.date = this.querySelector('#date-info');
+            this.average = this.querySelector('#average-calories');
+            this.status = this.querySelector('#status');
+            this.statusColumn = this.querySelector('#status-column');
+
+            this.setData(this.data);
+        };
+
+        InfoElementProto.sentenceCase = function (str) {
+            if ((str === null) || (str === ''))
+                return false;
+            else
+                str = str.toString();
+
+            return str.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+        }
+
+        InfoElementProto.setData = function (data) {
+            this.data = data;
+
+            this.total.textContent = data.total;
+            this.average.textContent = data.average;
+            this.date.textContent = this.formatDate(data.date);
+            this.status.textContent = this.sentenceCase(data.status);
+            if (data.status == 'good') {
+                this.statusColumn.className = 'column good';
+            }
+            else {
+                this.statusColumn.className = 'column bad';
+            }
+        };
+
+        InfoElementProto.formatDate = function(isoDate){
+            var dateObject = new Date(isoDate);
+            return this.getMonthName(dateObject.getMonth()) + ' ' + dateObject.getDate() + ', ' + dateObject.getFullYear();
+        };
+
+        InfoElementProto.getMonthName = function(monthNumber) {
+            var month = new Array();
+            month[0] = "January";
+            month[1] = "February";
+            month[2] = "March";
+            month[3] = "April";
+            month[4] = "May";
+            month[5] = "June";
+            month[6] = "July";
+            month[7] = "August";
+            month[8] = "September";
+            month[9] = "October";
+            month[10] = "November";
+            month[11] = "December";
+            return month[monthNumber];
+        };
+
+
+        // Registers <midori-layout in the main document
+        window.LayoutElement = thatDoc.registerElement('meals-dayinfo', {
+            prototype: InfoElementProto
+        });
+    })(window, document);
+</script>

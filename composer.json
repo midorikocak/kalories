@@ -1,0 +1,25 @@
+{
+    "name": "midorikocak/kalories",
+    "description": "A simple standalone OOP app with PHP",
+    "type": "project",
+    "require": {
+        "phpunit/phpunit": "^5.2"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Midori Kocak",
+            "email": "mtkocak@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "MidoriKocak\\": "src/"
+        },
+        "psr-0": {
+            "MidoriKocakTest\\": "tests/"
+        }
+    }
+
+}

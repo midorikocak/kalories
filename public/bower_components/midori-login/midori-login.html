@@ -1,0 +1,151 @@
+<!-- Defines element markup -->
+<template>
+    <style>
+        #result{
+            display: none;
+        }
+    </style>
+    <form id="login-form">
+        <fieldset>
+            <label for="username">Username</label>
+            <input type="text" placeholder="User Name" id="username" name="username">
+            <label for="username">Password</label>
+            <input type="password" placeholder="Password" id="password" name="password">
+            <input class="button-primary" type="submit" value="Send">
+        </fieldset>
+    </form>
+    <div id="result"></div>
+</template>
+
+<script>
+    (function (window, document, undefined) {
+                // Refers to the "importer", which is index.html
+                var thatDoc = document;
+
+                // Refers to the "importee", which is src/midori-login.html
+                var thisDoc = (thatDoc._currentScript || thatDoc.currentScript).ownerDocument;
+
+                // Gets content from <template>
+                var template = thisDoc.querySelector('template').content;
+
+                // Creates an object based in the HTML Element prototype
+                var LoginElementProto = Object.create(HTMLElement.prototype);
+
+
+                // Creates the "action" attribute and sets a default value
+                LoginElementProto.action = '';
+
+                LoginElementProto.observers = [];
+
+                LoginElementProto.addObserver = function (callable) {
+                    if (typeof callable === 'function' && this.observers.indexOf(callable) == -1) {
+                        this.observers.push(callable);
+                    }
+                };
+
+                LoginElementProto.fire = function (o, thisObj) {
+                    var scope = thisObj || window;
+                    this.observers.forEach(function (item) {
+                        item.call(scope, o);
+                    });
+                };
+
+                LoginElementProto.removeObserver = function (callable) {
+                    this.observers = this.observers.filter(
+                            function (item) {
+                                if (item !== callable) {
+                                    return item;
+                                }
+                            }
+                    );
+                };
+
+                // Fires when an instance of the element is created
+                LoginElementProto.createdCallback = function () {
+
+                    var clone = thatDoc.importNode(template, true);
+                    this.appendChild(clone);
+
+                    // Caches <strong> DOM query
+                    this.form = this.querySelector('form');
+                    this.result = this.querySelector('#result');
+                    this.url = "";
+
+                    //var data = new FormData(this.form);
+                    // Checks if the "who" attribute has been overwritten
+                    if (this.hasAttribute('action')) {
+                        var url = this.getAttribute('action');
+                        this.setAction(url);
+                    } else {
+                        var url = this.url;
+                        this.setAction(this.url);
+                    }
+
+                    this.form.addEventListener('submit', function (e) {
+                        e.preventDefault();
+                        var form = e.target;
+                        var data = toJSONString(form);
+                        var request = new XMLHttpRequest();
+                        var result = document.querySelector('#result');
+
+                        request.onreadystatechange = function () {
+                            if (request.readyState === 4) {
+                                if (request.status === 200) {
+                                    LoginElementProto.fire(request.responseText);
+                                    result.textContent = request.responseText;
+                                } else {
+                                    console.log('An error occurred during your request: ' + request.status + ' ' + request.statusText);
+                                }
+                            }
+                        };
+
+                        request.open('POST', url)
+
+                        request.setRequestHeader('Content-Type', 'application/json')
+                        request.send(data)
+                    });
+                };
+
+                function toJSONString(form) {
+                    var obj = {};
+                    var elements = form.querySelectorAll("input, select, textarea");
+                    for (var i = 0; i < elements.length; ++i) {
+                        var element = elements[i];
+                        var name = element.name;
+                        var value = element.value;
+
+                        if (name) {
+                            obj[name] = value;
+                        }
+                    }
+
+                    return JSON.stringify(obj);
+                }
+
+                // Fires when an attribute was added, removed, or updated
+                LoginElementProto.attributeChangedCallback = function (attr, oldVal, newVal) {
+                    if (attr === '') {
+                        this.setAction(newVal);
+                    }
+                };
+
+                // Sets new value to "href" attribute
+                LoginElementProto.setAction = function (val) {
+                    this.url = val;
+                };
+
+                LoginElementProto.setData = function (val) {
+                    this.data = val;
+                    for (key in this.data) {
+                        if (typeof  this.form.elements[key] != 'undefined')
+                            this.form.elements[key].value = this.data[key];
+                    }
+                };
+
+
+                // Registers <midori-login> in the main document
+                window.LoginElement = thatDoc.registerElement('midori-login', {
+                    prototype: LoginElementProto
+                });
+            })(window, document);
+</script>

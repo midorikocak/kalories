@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kalories</title>
+    <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+    <link rel="stylesheet" href="bower_components/normalize.css/normalize.css">
+    <link rel="stylesheet" href="bower_components/milligram/dist/milligram.min.css">
+    <link rel="import" href="bower_components/midori-login/midori-login.html">
+    <link rel="import" href="bower_components/midori-message/midori-message.html">
+
+</head>
+<body>
+<style>
+    body {
+        height: 100vh;
+        width: 100vw;
+        background: red; /* For browsers that do not support gradients */
+        background: -webkit-linear-gradient(red, #9b4dca); /* For Safari 5.1 to 6.0 */
+        background: -o-linear-gradient(red, #9b4dca); /* For Opera 11.1 to 12.0 */
+        background: -moz-linear-gradient(red, #9b4dca); /* For Firefox 3.6 to 15 */
+        background: linear-gradient(red, #9b4dca); /* Standard syntax */
+
+    }
+
+    .outer {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .login {
+        padding: 1rem;
+    }
+
+    input[type='text'], input[type='password'] {
+        background-color: white !important;
+    }
+
+    label {
+        color: white;
+        font-weight: 400;
+    }
+
+    h1 {
+        color: white;
+    }
+</style>
+<section class="outer">
+    <section class="login">
+        <h1>Kalories</h1>
+        <midori-login action="/app.php/users/login">
+        </midori-login>
+        <midori-message></midori-message>
+    </section>
+</section>
+<script>
+    var loginForm = document.querySelector('midori-login');
+    var messageElement = document.querySelector('midori-message');
+    loginForm.addObserver(function (data) {
+        data = JSON.parse(data);
+        messageElement.setMessage(data.message || 'Success!');
+        setTimeout(function () {
+            window.location.href = "/index.html"
+        }, 1000);
+        messageElement.show();
+    });
+</script>
+</body>
+</html>
