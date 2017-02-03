@@ -114,27 +114,26 @@ var logout = function () {
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    var checkLogin = function () {
-        var request = new XMLHttpRequest();
+    var request = new XMLHttpRequest();
 
-        request.onreadystatechange = function () {
-            if (request.readyState === 4) {
-                if (request.status === 200) {
-                    responseData = JSON.parse(request.responseText);
-                    console.log(responseData);
-                    if (responseData.username == null) {
-                        logout();
-                    }
-                    else {
-                        dailyMeals(isoDate);;
-                    }
-                } else {
-                    mainContentElement.innerHTML = 'An error occurred during your request: ' + request.status + ' ' + request.statusText;
+    request.onreadystatechange = function () {
+        if (request.readyState === 4) {
+            if (request.status === 200) {
+                responseData = JSON.parse(request.responseText);
+                console.log(responseData);
+                if (responseData.username == null) {
+                    logout();
                 }
+                else {
+                    dailyMeals(isoDate);
+                    ;
+                }
+            } else {
+                mainContentElement.innerHTML = 'An error occurred during your request: ' + request.status + ' ' + request.statusText;
             }
-        };
-        request.open('GET', "/kalories/app.php/user");
-        request.send();
+        }
     };
+    request.open('GET', "/kalories/app.php/user");
+    request.send();
 });
 
