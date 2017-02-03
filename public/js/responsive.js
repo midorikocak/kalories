@@ -33,7 +33,7 @@ var logout = function () {
     request.send();
 };
 
-var initApplication = function(){
+var initApplication = function () {
     var mainContentElement = document.querySelector('.content');
     var homeButton = document.querySelector('#home');
     var settingsButton = document.querySelector('#settings');
@@ -73,6 +73,7 @@ var initApplication = function(){
 
     var dailyMeals = function (date) {
         mainContentElement.innerHTML = '';
+        mealsWithControls.setAttribute('date', date);
         mealsWithControls.setDate(date);
         mainContentElement.appendChild(mealsWithControls);
     }
