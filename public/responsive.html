@@ -154,7 +154,7 @@
         request.onreadystatechange = function () {
             if (request.readyState === 4) {
                 if (request.status === 200) {
-                    window.location.href = "/public/login.html";
+                    window.location.href = "/kalories/public/login.html";
                 } else {
                     mainContentElement.innerHTML = 'An error occurred during your request: ' + request.status + ' ' + request.statusText;
                 }
