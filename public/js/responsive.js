@@ -153,5 +153,7 @@ var initApplication = function () {
         request.open('GET', "/kalories/public/month.html");
         request.send();
     };
+
+    dailyMeals(isoDate);
 };
 
