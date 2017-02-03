@@ -109,7 +109,7 @@ var initApplication = function(){
                 }
             }
         };
-        request.open('GET', "/public/settings.html");
+        request.open('GET', "/kalories/public/settings.html");
         request.send();
     };
 
@@ -133,7 +133,7 @@ var initApplication = function(){
     };
 
     document.addEventListener("DOMContentLoaded", function () {
-        dailyMeals(isoDate);
+        home();
     });
 };
 
