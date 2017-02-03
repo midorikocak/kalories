@@ -20,6 +20,27 @@
     <link rel="import" href="/kalories/public/bower_components/meals-withcontrols/meals-withcontrols.html">
 </head>
 <body>
+<script>
+    (function( window, undefined ) {
+        var request = new XMLHttpRequest();
+
+        request.onreadystatechange = function () {
+            if (request.readyState === 4) {
+                if (request.status === 200) {
+                    responseData = JSON.parse(request.responseText);
+                    console.log(responseData);
+                    if (responseData.username == null) {
+                        logout();
+                    }
+                } else {
+                    mainContentElement.innerHTML = 'An error occurred during your request: ' + request.status + ' ' + request.statusText;
+                }
+            }
+        };
+        request.open('GET', "/kalories/app.php/user");
+        request.send();
+    })(window);
+</script>
 <header class="midori-header">
     <h1>Kalories</h1>
     <ul class="midori-navigation horizontal">
