@@ -1,3 +1,4 @@
+var bodyElement = document.querySelector('body')
 var mainContentElement = document.querySelector('.content');
 var homeButton = document.querySelector('#home');
 var settingsButton = document.querySelector('#settings');
@@ -93,6 +94,22 @@ var month = function () {
         }
     };
     request.open('GET', "/kalories/public/month.html");
+    request.send();
+};
+
+var loadLayout = function () {
+    var request = new XMLHttpRequest();
+
+    request.onreadystatechange = function () {
+        if (request.readyState === 4) {
+            if (request.status === 200) {
+                bodyElement.innerHTML = request.responseText;
+            } else {
+                bodyElement.innerHTML = 'An error occurred during your request: ' + request.status + ' ' + request.statusText;
+            }
+        }
+    };
+    request.open('GET', "/kalories/public/layout.html");
     request.send();
 };
 

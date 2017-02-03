@@ -32,44 +32,18 @@
                     if (responseData.username == null) {
                         logout();
                     }
+                    else{
+                        loadLayout();
+                    }
                 } else {
                     mainContentElement.innerHTML = 'An error occurred during your request: ' + request.status + ' ' + request.statusText;
                 }
             }
         };
-        setTimeout(function(){},1000);
         request.open('GET', "/kalories/app.php/user");
         request.send();
     })(window);
 </script>
-<header class="midori-header">
-    <h1>Kalories</h1>
-    <ul class="midori-navigation horizontal">
-        <li><a id="settings" href="#">Settings</a></li>
-        <li><a id="logout" href="#">Logout</a></li>
-    </ul>
-</header>
-<div class="container main">
-    <div class="row">
-        <div class="column sidebar">
-            <ul class="midori-navigation vertical">
-                <li><a href="#" id="today">Today</a></li>
-                <li><a href="#" id="home">All Meals</a></li>
-                <li><a href="#" id="last-week">Last Week</a></li>
-                <li><a href="#" id="calendar">Month</a></li>
-            </ul>
-        </div>
-        <div class="column column-75 content">
-        </div>
-    </div>
-</div>
-<footer class="container">
-    <div class="row">
-        <p>
-            Kalories App Using Web Components.
-        </p>
-    </div>
-</footer>
 <script src="/kalories/public/js/responsive.js"></script>
 </body>
 </html>
