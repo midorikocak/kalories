@@ -50,7 +50,7 @@ Midori Kocak – [@midorikocak](https://twitter.com/midorikocak) – mtkocak@gma
 
 Distributed under the MIT license. See ``LICENSE`` for more information.
 
-[Live DEMO https://mynameismidori.com/kalories](https://mynameismidori.com/kalories)
+[Live DEMO https://kalories.mynameismidori.com](https://kalories.mynameismidori.com/)
 
 [https://github.com/midorikocak/kalories](https://github.com/midorikocak/kalories)
 
