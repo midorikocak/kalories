@@ -73,7 +73,6 @@ var initApplication = function () {
 
     var dailyMeals = function (date) {
         mainContentElement.innerHTML = '';
-        mealsWithControls.setAttribute('date', date);
         mealsWithControls.setDate(date);
         mainContentElement.appendChild(mealsWithControls);
     }
@@ -133,6 +132,8 @@ var initApplication = function () {
         request.send();
     };
 
-    dailyMeals(isoDate);
+    (function (window, document, undefined, date) {
+        dailyMeals(date);
+    })(window, document, undefined, isoDate);
 };
 
