@@ -64,9 +64,11 @@
     loginForm.addObserver(function (data) {
         data = JSON.parse(data);
         messageElement.setMessage(data.message || 'Success!');
-        setTimeout(function () {
-            window.location.href = "/index.html"
-        }, 1000);
+        if(data.message=='You are logged in.'){
+            setTimeout(function () {
+                window.location.href = "/kalories/index.html"
+            }, 1000);
+        }
         messageElement.show();
     });
 </script>
