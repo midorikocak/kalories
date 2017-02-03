@@ -92,7 +92,7 @@ var month = function () {
             }
         }
     };
-    request.open('GET', "/public/month.html");
+    request.open('GET', "/kalories/public/month.html");
     request.send();
 };
 
@@ -102,7 +102,7 @@ var logout = function () {
     request.onreadystatechange = function () {
         if (request.readyState === 4) {
             if (request.status === 200) {
-                window.location.href = "/public/login.html";
+                window.location.href = "/kalories/public/login.html";
             } else {
                 mainContentElement.innerHTML = 'An error occurred during your request: ' + request.status + ' ' + request.statusText;
             }
