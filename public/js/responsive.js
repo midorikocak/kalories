@@ -1,3 +1,25 @@
+(function( window, undefined ) {
+    var request = new XMLHttpRequest();
+
+    request.onreadystatechange = function () {
+        if (request.readyState === 4) {
+            if (request.status === 200) {
+                responseData = JSON.parse(request.responseText);
+                if (responseData.username == null) {
+                    logout();
+                }
+                else{
+                    loadLayout();
+                }
+            } else {
+                mainContentElement.innerHTML = 'An error occurred during your request: ' + request.status + ' ' + request.statusText;
+            }
+        }
+    };
+    request.open('GET', "/kalories/app.php/user");
+    request.send();
+})(window);
+
 var bodyElement = document.querySelector('body')
 
 var loadLayout = function () {
@@ -131,9 +153,5 @@ var initApplication = function () {
         request.open('GET', "/kalories/public/month.html");
         request.send();
     };
-
-    (function (window, document, undefined, date) {
-        dailyMeals(date);
-    })(window, document, undefined, isoDate);
 };
 
