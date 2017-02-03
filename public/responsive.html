@@ -173,6 +173,7 @@
                 if (request.readyState === 4) {
                     if (request.status === 200) {
                         responseData = JSON.parse(request.responseText);
+                        console.log(responseData);
                         if(responseData.username == null){
                             logout();
                         }
@@ -184,7 +185,7 @@
                     }
                 }
             };
-            request.open('GET', "/kalories/app.php/user/");
+            request.open('GET', "/kalories/app.php/user");
             request.send();
         };
     });
