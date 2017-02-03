@@ -132,8 +132,6 @@ var initApplication = function(){
         request.send();
     };
 
-    document.addEventListener("DOMContentLoaded", function () {
-        home();
-    });
+    dailyMeals(isoDate);
 };
 
