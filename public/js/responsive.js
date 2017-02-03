@@ -1,4 +1,4 @@
-(function( window, undefined ) {
+(function( window, document, undefined ) {
     var request = new XMLHttpRequest();
 
     request.onreadystatechange = function () {
@@ -18,7 +18,7 @@
     };
     request.open('GET', "/kalories/app.php/user");
     request.send();
-})(window);
+})(window, document);
 
 var bodyElement = document.querySelector('body')
 
