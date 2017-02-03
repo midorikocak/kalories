@@ -112,7 +112,32 @@ var logout = function () {
     request.send();
 };
 
+var checkLogin = function () {
+    var request = new XMLHttpRequest();
+
+    request.onreadystatechange = function () {
+        if (request.readyState === 4) {
+            if (request.status === 200) {
+                var responseData = JSON.parse(request.responseText);
+                if(responseData.username != null){
+                    var body = document.querySelector('body');
+                    body.style.display = 'initial';
+                    dailyMeals(isoDate);
+                }
+                else
+                    {
+                    logout();
+                }
+            } else {
+                mainContentElement.innerHTML = 'An error occurred during your request: ' + request.status + ' ' + request.statusText;
+            }
+        }
+    };
+    request.open('GET', "/app.php/user");
+    request.send();
+};
+
 document.addEventListener("DOMContentLoaded", function () {
-    dailyMeals(isoDate);
+    checkLogin();
 });
 
