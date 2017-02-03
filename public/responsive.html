@@ -165,7 +165,28 @@
     };
 
     document.addEventListener("DOMContentLoaded", function () {
-        home();
+
+        var checkLogin = function () {
+            var request = new XMLHttpRequest();
+
+            request.onreadystatechange = function () {
+                if (request.readyState === 4) {
+                    if (request.status === 200) {
+                        responseData = JSON.parse(request.responseText);
+                        if(responseData.username == null){
+                            logout();
+                        }
+                        else{
+                            home();
+                        }
+                    } else {
+                        mainContentElement.innerHTML = 'An error occurred during your request: ' + request.status + ' ' + request.statusText;
+                    }
+                }
+            };
+            request.open('GET', "/kalories/app.php/user/");
+            request.send();
+        };
     });
 
 
