@@ -30,6 +30,8 @@ Now, follow these steps:
 ## Usage example
 
 After installation go to index.html.
+Default username: mtkocak@gmail.com
+Default password: password
 
 ## Development setup
 
